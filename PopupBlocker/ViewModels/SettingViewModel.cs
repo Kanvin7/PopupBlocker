@@ -1,82 +1,96 @@
 ﻿using PopupBlocker.Core;
-using PopupBlocker.Core.Services;
 using PopupBlocker.Utility.Commons;
+using System.Text.Json.Serialization;
 
 namespace PopupBlocker.ViewModels
 {
-    public class SettingViewModel : ViewModelBase
+    public class SettingViewModel : ViewModelServiceBase, Core.Services.IService
     {
         /// <summary>
         /// 是否启用日志记录
         /// </summary>
-        public bool IsEnableLog     // 放最上面，日志优先级应该最高
+        [JsonPropertyName("isEnableLog")]
+        public bool IsEnableLog
         {
-            get => _logger.IsActive;
+            get => LoggerService.Switch;
             set
             {
-                _logger.IsActive = value;
+                LoggerService.Switch = value;
                 NotifyPropertyChanged();
             }
         }
         /// <summary>
         /// 是否启用拦截器
         /// </summary>
-        public bool IsEnableInterceptor     // 引用不负责释放
+        [JsonPropertyName("isEnableBlock")]
+        public bool IsEnableBlock
         {
-            get => Singleton<PopupInterceptorViewModel>.Instance.IsEnableInterceptor;
+            get => PopupBlockService.Switch;
             set
             {
-                Singleton<PopupInterceptorViewModel>.Instance.IsEnableInterceptor = value;
+                try
+                {
+                    PopupBlockService.Switch = value;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    LoggerService.Error("拦截服务启动失败，请以管理员身份运行程序！");
+                }
                 NotifyPropertyChanged();
             }
         }
         /// <summary>
         /// 是否开机自启
         /// </summary>
+        [JsonPropertyName("isAutoRun")]
         public bool IsAutoRun
         {
-            get
-            {
-                return AutoRunService.GetTask(out _, out _);
-            }
+            get => AutoRunService.Switch;
             set
             {
-                if (value)
+                try
                 {
-                    try
-                    {
-                        AutoRunService.RegisterTask();
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        _logger.Error("设置开机自启失败，请以管理员身份运行程序！");
-                    }
+                    AutoRunService.Switch = value;
                 }
-                else
-                    AutoRunService.UnregisterTask(out _, out _);
+                catch (UnauthorizedAccessException)
+                {
+                    LoggerService.Error("设置开机自启失败，请以管理员身份运行程序！");
+                }
                 NotifyPropertyChanged();
             }
         }
 
         #region 加载和保存设置
-        private readonly LoggerService _logger = Singleton<LoggerService>.Instance;
-
-        /* 设置耦合度太高了，它只是从其它地方读取和修改数据，所以可以这么加载设置
-         * 不过也没有必要做那么复杂就是了，你就当这是反面教材，这么写其实很糟糕
-         * 就目前来看这样就好了，以后有需要的话再重构，不要过度设计
-         * （真的好颠
-        */
-        public SettingViewModel()
+        private bool _isLoaded;
+        public void ConfirmLoaded() => _isLoaded = true;
+        public static SettingViewModel LoadSetting()
         {
-            if (System.IO.File.Exists(AppPath.SettingFilePath))
+            SettingViewModel setting;
+            try
             {
-                var isEnableInterceptor = System.IO.File.ReadAllText(AppPath.SettingFilePath);
-                if (isEnableInterceptor[0] == '1')
-                    IsEnableInterceptor = true;
-                else
-                    IsEnableInterceptor = false;
+                setting = FileOperation.ReadJsonFromFile<SettingViewModel>(AppPath.SettingFilePath);
             }
+            catch
+            {
+                setting = new SettingViewModel();
+            }
+            setting.ConfirmLoaded();
+            return setting;
         }
+
+        public void SaveSetting() => FileOperation.WriteJsonToFile(AppPath.SettingFilePath, this);
         #endregion
+
+        #region IService
+        [JsonIgnore]
+        public bool Switch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        #endregion
+
+        protected override void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            if (_isLoaded)
+                SaveSetting();
+            base.NotifyPropertyChanged(propertyName);
+        }
     }
 }

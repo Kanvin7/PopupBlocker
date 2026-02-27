@@ -1,6 +1,4 @@
-﻿using RemoveRuleParameters = System.Tuple<object, object?>;
-
-namespace PopupBlocker.Converters
+﻿namespace PopupBlocker.Converters
 {
     public class RemoveRuleParameterConverter : System.Windows.Data.IMultiValueConverter
     {

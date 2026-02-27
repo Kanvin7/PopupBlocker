@@ -15,10 +15,10 @@ namespace PopupBlocker.Utility.Windows
         #endregion
 
         #region 方法
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern UIntPtr FindWindow(string? className, string? windowTitle);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern UIntPtr FindWindowEx(UIntPtr parentHandle, UIntPtr childAfter, string? className, string? windowTitle);
 
         [DllImport("user32.dll")]

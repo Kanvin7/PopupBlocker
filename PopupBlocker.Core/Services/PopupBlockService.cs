@@ -1,12 +1,24 @@
 using PopupBlocker.Utility.Commons;
+using PopupBlocker.Utility.Interfaces;
 using PopupBlocker.Utility.Windows;
 
 namespace PopupBlocker.Core.Services
 {
-    public class PopupInterceptorService : Utility.Interfaces.ETWThreadMonitor
+    public class PopupBlockService(LoggerService loggerService, RuleConfigService ruleConfigService) : ETWThreadMonitor, IService
     {
-        public PopupInterceptorService() { }
-        private readonly LoggerService _logger = Singleton<LoggerService>.Instance;
+        #region IService
+        public bool Switch
+        {
+            get => Status != Status.Init && Status != Status.Stop;
+            set
+            {
+                if (value)
+                    Start();
+                else
+                    Stop();
+            }
+        }
+        #endregion
 
         #region 服务启动与停止逻辑
         protected override void OnStart()
@@ -24,9 +36,10 @@ namespace PopupBlocker.Core.Services
 
         #region 监控逻辑
         [ThreadStatic]
-        private static Models.InterceptorRules? _rules;
+        private static Models.BlockRules? _rules;
         private readonly object _monitorLock = new();
-        private readonly RuleConfigService _config = Singleton<RuleConfigService>.Instance;
+        private readonly LoggerService _logger = loggerService;
+        private readonly RuleConfigService _config = ruleConfigService;
 
         protected override void OnThreadCreated(Microsoft.Diagnostics.Tracing.Parsers.Kernel.ThreadTraceData data)
         {
@@ -35,7 +48,7 @@ namespace PopupBlocker.Core.Services
                 Task.Run(() => CheckAndBlockWindows(rules));
         }
 
-        private void CheckAndBlockWindows(Models.InterceptorRules rules)
+        private void CheckAndBlockWindows(Models.BlockRules rules)
         {
             _rules = rules;
             lock (_monitorLock)
@@ -76,7 +89,7 @@ namespace PopupBlocker.Core.Services
             return true;
         }
 
-        private static void CloseWindowSafely(UIntPtr hWnd)
+        private void CloseWindowSafely(UIntPtr hWnd)
         {
             try
             {
@@ -91,7 +104,7 @@ namespace PopupBlocker.Core.Services
             }
             catch (Exception ex)
             {
-                Singleton<LoggerService>.Instance.Debug($"关闭窗口时出错：{ex.Message}");
+                _logger.Debug($"关闭窗口时出错：{ex.Message}");
                 // 最后手段：隐藏窗口
                 WinAPI.ShowWindow(hWnd, WinAPI.SW_HIDE);
             }

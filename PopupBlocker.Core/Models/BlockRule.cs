@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace PopupBlocker.Core.Models
 {
-    public sealed class InterceptorRule : Utility.Interfaces.IPopupInfo
+    public sealed class InterceptorRule : IPopupInfo
     {
         #region 属性
         /// <summary>

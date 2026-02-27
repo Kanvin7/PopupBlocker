@@ -1,4 +1,4 @@
-﻿namespace PopupBlocker.Utility.Interfaces
+﻿namespace PopupBlocker.Core.Models
 {
     public interface IPopupInfo : IPopupCount
     {

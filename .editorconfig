@@ -1,0 +1,28 @@
+﻿[*ViewModel.cs]
+
+# CS8618: 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑添加 "required" 修饰符或声明为可为 null。
+dotnet_diagnostic.CS8618.severity = suggestion
+
+# CA1822: 将成员标记为 static
+dotnet_diagnostic.CA1822.severity = none
+
+[API_*.cs]
+
+# CA1401: P/Invokes 应该是不可见的
+dotnet_diagnostic.CA1401.severity = none
+
+# SYSLIB1054: 使用 “LibraryImportAttribute” 而不是 “DllImportAttribute” 在编译时生成 P/Invoke 封送代码
+dotnet_diagnostic.SYSLIB1054.severity = none
+
+# CA2101: 指定对 P/Invoke 字符串参数进行封送处理
+dotnet_diagnostic.CA2101.severity = none
+
+[BlockRul{e,es}.cs]
+
+# IDE0290: 使用主构造函数
+csharp_style_prefer_primary_constructors = false
+
+[*.xaml.cs]
+
+# IDE1006: 命名样式
+dotnet_diagnostic.IDE1006.severity = silent

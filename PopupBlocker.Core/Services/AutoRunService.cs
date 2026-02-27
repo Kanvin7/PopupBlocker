@@ -2,9 +2,23 @@
 
 namespace PopupBlocker.Core.Services
 {
-    public static class AutoRunService
+    public class AutoRunService : IService
     {
-        public static void RegisterTask()
+        #region IService
+        public bool Switch
+        {
+            get => GetTask(out _, out _);
+            set
+            {
+                if (value)
+                    RegisterTask();
+                else
+                    UnregisterTask(out _, out _);
+            }
+        }
+        #endregion
+
+        private static void RegisterTask()
         {
             UnregisterTask(out var taskScheduler, out var rootFolder);
 
@@ -13,7 +27,7 @@ namespace PopupBlocker.Core.Services
 
             // 设置任务基本信息
             taskDefinition.RegistrationInfo.Description = "轻量级弹窗拦截器的开机自启任务";
-            taskDefinition.RegistrationInfo.Author = "依伊";
+            taskDefinition.RegistrationInfo.Author = "yiyiofficial.top";
 
             // 设置权限
             taskDefinition.Principal.RunLevel = _TASK_RUNLEVEL.TASK_RUNLEVEL_HIGHEST;
@@ -54,13 +68,13 @@ namespace PopupBlocker.Core.Services
                 null);
         }
 
-        public static void UnregisterTask(out TaskSchedulerClass taskScheduler, out ITaskFolder rootFolder)
+        private static void UnregisterTask(out TaskSchedulerClass taskScheduler, out ITaskFolder rootFolder)
         {
             if (GetTask(out taskScheduler, out rootFolder))
                 rootFolder.DeleteTask(AppPath.AppName, 0);
         }
 
-        public static bool GetTask(out TaskSchedulerClass taskScheduler, out ITaskFolder rootFolder)
+        private static bool GetTask(out TaskSchedulerClass taskScheduler, out ITaskFolder rootFolder)
         {
             taskScheduler = new TaskSchedulerClass();
             taskScheduler.Connect(null, null, null, null);

@@ -1,4 +1,6 @@
-﻿namespace PopupBlocker.Views.Pages
+﻿using PopupBlocker.Core.Services;
+
+namespace PopupBlocker.Views.Pages
 {
     /// <summary>
     /// SettingPage.xaml 的交互逻辑
@@ -8,7 +10,7 @@
         public SettingPage()
         {
             InitializeComponent();
-            this.DataContext = Utility.Commons.Singleton<ViewModels.SettingViewModel>.Instance;
+            this.DataContext = Utility.Commons.Singleton<ServiceManager>.Instance.GetService<ViewModels.SettingViewModel>(ServiceType.DefaultSettingService);
         }
     }
 }

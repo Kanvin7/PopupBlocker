@@ -2,7 +2,7 @@
 
 namespace PopupBlocker.Core.Models
 {
-    public sealed class InterceptorRules : Utility.Interfaces.IPopupInfo
+    public sealed class BlockRules : IPopupInfo
     {
         #region 属性
         /// <summary>
@@ -24,13 +24,13 @@ namespace PopupBlocker.Core.Models
 
         #region 构造函数
         [JsonConstructor]
-        public InterceptorRules(string processName, List<InterceptorRule>? rules, bool isActive = true)
+        public BlockRules(string processName, List<InterceptorRule>? rules, bool isActive = true)
         {
             ProcessName = processName;
             Rules = rules;
             IsActive = isActive;
         }
-        public InterceptorRules(string processName, bool isActive = true) : this(processName, null, isActive) { }
+        public BlockRules(string processName, bool isActive = true) : this(processName, null, isActive) { }
         #endregion
 
         #region 方法
@@ -65,7 +65,7 @@ namespace PopupBlocker.Core.Models
         /// <param name="rule"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public Utility.Interfaces.IPopupCount? FindRule(string className, string windowTitle)
+        public IPopupCount? FindRule(string className, string windowTitle)
         {
             if (IsProcessName)
                 throw new InvalidOperationException("按进程名称拦截时，不能匹配规则");

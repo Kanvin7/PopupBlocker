@@ -8,17 +8,18 @@ namespace PopupBlocker.Core.Services
         Error
     }
 
-    public class LoggerService
+    public class LoggerService : IService
     {
+        #region IService
+        public bool Switch { get; set; }
+        #endregion
+
         public LoggerService() { }
         public event Action<string>? LogWritingEvent;
 
-        private bool _isActive;
-        public bool IsActive { get => _isActive; set => _isActive = value; }
-
         private void LogWriting(LogLevel level, string message)
         {
-            if (!IsActive)
+            if (!Switch)
                 return;
 
             // 目前日志仅需通过事件触发，不直接写入文件或控制台

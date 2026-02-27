@@ -5,9 +5,8 @@ using System.Windows.Input;
 
 namespace PopupBlocker.ViewModels
 {
-    public class SelectorViewModel : ViewModelBase
+    public class SelectorViewModel : ViewModelServiceBase
     {
-        private readonly Core.Services.RuleConfigService _ruleList = Singleton<Core.Services.RuleConfigService>.Instance;
         public SelectorViewModel()
         {
             ConfirmToolVisibility = Visibility.Hidden;
@@ -53,7 +52,7 @@ namespace PopupBlocker.ViewModels
         {
             if (obj is SelectorWindow selector)
             {
-                _ruleList.AddRule(ProcessName);
+                RuleConfigService.AddRule(ProcessName);
                 selector.Close();
             }
         });
@@ -62,7 +61,7 @@ namespace PopupBlocker.ViewModels
         {
             if (obj is SelectorWindow selector)
             {
-                _ruleList.AddRule(ProcessName, WindowInfo.GetWindowClass(_handle), WindowInfo.GetWindowTitle(_handle));
+                RuleConfigService.AddRule(ProcessName, WindowInfo.GetWindowClass(_handle), WindowInfo.GetWindowTitle(_handle));
                 selector.Close();
             }
         });

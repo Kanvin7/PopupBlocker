@@ -24,7 +24,7 @@
             
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="拦截规则" TargetPageTag="Home"
-                    TargetPageType="{x:Type pages:InterceptorRulePage}">
+                    TargetPageType="{x:Type pages:BlockRulePage}">
                     <ui:NavigationViewItem.Icon>
                         <ui:SymbolIcon Symbol="ChannelSubtract24"/>
                     </ui:NavigationViewItem.Icon>

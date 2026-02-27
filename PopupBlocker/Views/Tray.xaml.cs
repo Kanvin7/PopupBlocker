@@ -1,5 +1,5 @@
-﻿using PopupBlocker.Utility.Commons;
-using PopupBlocker.ViewModels;
+﻿using PopupBlocker.Core.Services;
+using PopupBlocker.Utility.Commons;
 using System.Windows;
 
 namespace PopupBlocker.Views
@@ -11,9 +11,9 @@ namespace PopupBlocker.Views
     {
         public Tray(bool isShowMainWindow = true)
         {
-            // 强制加载设置，确保核心能正常运行
+            // 加载服务，确保核心能正常运行
             // 其创建了一些IDisposable对象，记得在OnClosed中释放资源
-            _ = Singleton<SettingViewModel>.Instance;
+            Singleton<ServiceManager>.Instance.RegisterService(ServiceType.DefaultSettingService, ViewModels.SettingViewModel.LoadSetting());
             // 创建主窗口，按需显示
             if (isShowMainWindow)
             {
@@ -29,8 +29,7 @@ namespace PopupBlocker.Views
             if (!_mainWindow!.IsClosed)
                 _mainWindow.Close();
             // 谁创建谁释放！
-            // 对于有IDisposable的ViewModel，使用单例模式，并在窗口关闭时释放资源
-            Singleton<PopupInterceptorViewModel>.Instance.Dispose();
+            Singleton<ServiceManager>.Instance.Dispose();
             base.OnClosed(e);
         }
 
@@ -54,7 +53,5 @@ namespace PopupBlocker.Views
         private void niMenu_Setting_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Setting");
         private void niMenu_Close_Click(object sender, RoutedEventArgs e) => this.Close();
         #endregion
-
-
     }
 }

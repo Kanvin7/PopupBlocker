@@ -16,7 +16,7 @@
 
     <StackPanel>
         <controls:CardToggleSwitch Content="开机自启" IsChecked="{Binding IsAutoRun}"/>
-        <controls:CardToggleSwitch Content="启动拦截" IsChecked="{Binding IsEnableInterceptor}"/>
+        <controls:CardToggleSwitch Content="启动拦截" IsChecked="{Binding IsEnableBlock}"/>
         <controls:CardToggleSwitch Content="启动日志" IsChecked="{Binding IsEnableLog}"/>
     </StackPanel>
 </Page>

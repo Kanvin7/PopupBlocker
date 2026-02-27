@@ -1,36 +1,31 @@
 using PopupBlocker.Core.Models;
-using PopupBlocker.Utility.Interfaces;
-using System.IO;
-using System.Text.Json;
-using InterceptorRuleList = System.Collections.Generic.List<PopupBlocker.Core.Models.InterceptorRules>;
+using PopupBlocker.Utility.Commons;
 
 namespace PopupBlocker.Core.Services
 {
-    public class RuleConfigService
+    public class RuleConfigService : IService
     {
-        #region 私有字段
-        // 存储拦截规则的列表
-        private readonly InterceptorRuleList _ruleList = [];
-        // JSON 序列化选项，用于美化输出和驼峰命名
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-        // 日志服务，用于记录日志信息
-        private readonly LoggerService _logger = Utility.Commons.Singleton<LoggerService>.Instance;
+        #region IService
+        public bool Switch { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         #endregion
 
-        public RuleConfigService()
+        #region 私有字段
+        // 存储拦截规则的列表
+        private readonly BlockRuleList _ruleList = [];
+        // 日志服务，用于记录日志信息
+        private readonly LoggerService _logger;
+        #endregion
+
+        public RuleConfigService(LoggerService loggerService)
         {
+            _logger = loggerService;
             LoadRuleList();
         }
 
         /// <summary>
         /// 规则变化通知事件，当规则发生变化时触发此事件。
         /// </summary>
-        public event Action<IEnumerable<InterceptorRules>>? RulesChanged;
+        public event Action<IEnumerable<BlockRules>>? RulesChanged;
         public long BlockedCount => _ruleList.Sum(r => r.BlockedCount);
 
         #region 规则列表的公共方法
@@ -40,11 +35,7 @@ namespace PopupBlocker.Core.Services
             _ruleList.Clear();
             try
             {
-                if (!File.Exists(fp))
-                    throw new FileNotFoundException($"拦截规则文件不存在：{fp}");
-
-                using var jsonStream = File.OpenRead(fp);
-                var rules = JsonSerializer.Deserialize<InterceptorRuleList>(jsonStream) ?? throw new NullReferenceException($"无效的拦截规则文件：{fp}");
+                var rules = FileOperation.ReadJsonFromFile<BlockRuleList>(fp);
                 _ruleList.AddRange(rules);
 
                 if (filePath is not null)
@@ -63,9 +54,7 @@ namespace PopupBlocker.Core.Services
             var fp = filePath ?? AppPath.RuleConfigFilePath;
             try
             {
-                using var jsonStream = File.OpenWrite(fp);
-                jsonStream.SetLength(0);
-                JsonSerializer.Serialize(jsonStream, _ruleList, _jsonSerializerOptions);
+                FileOperation.WriteJsonToFile(fp, _ruleList);
             }
             catch (Exception ex)
             {
@@ -81,7 +70,7 @@ namespace PopupBlocker.Core.Services
                 RulesChanged?.Invoke(GetAllRules());
         }
 
-        public InterceptorRules? FindRules(string processName) => _ruleList.Find(r => r.ProcessName == processName);
+        public BlockRules? FindRules(string processName) => _ruleList.Find(r => r.ProcessName == processName);
 
         public void ResetAllCounts()
         {
@@ -90,7 +79,7 @@ namespace PopupBlocker.Core.Services
             _logger.Info("所有拦截规则的计数已重置");
         }
 
-        public void ResetRulesCount(InterceptorRules rules)
+        public void ResetRulesCount(BlockRules rules)
         {
             // 能重置就是存在规则，存在就可以直接指定规则，无需搜索
             rules.ResetBlockCount();
@@ -103,7 +92,7 @@ namespace PopupBlocker.Core.Services
          * 也是此处对于规则方法能如此轻松实现的原因
          * 如果使用深拷贝，你必须给每个规则方法加上搜索逻辑，以找到并更新原始列表中的规则
          */
-        public InterceptorRuleList GetAllRules() => [.. _ruleList];
+        public BlockRuleList GetAllRules() => [.. _ruleList];
         #endregion
 
         #region 规则的公共方法
@@ -115,7 +104,7 @@ namespace PopupBlocker.Core.Services
             {
                 if (rules is null)
                 {
-                    var newRules = new InterceptorRules(processName);
+                    var newRules = new BlockRules(processName);
                     _ruleList.Add(newRules);
                     SaveRuleList();
                     _logger.Info($"拦截规则已成功添加：{newRules}");
@@ -127,7 +116,7 @@ namespace PopupBlocker.Core.Services
             {
                 if (rules is null)
                 {
-                    var newRules = new InterceptorRules(processName, [rule]);
+                    var newRules = new BlockRules(processName, [rule]);
                     _ruleList.Add(newRules);
                     SaveRuleList();
                     _logger.Info($"拦截规则已成功添加：{newRules.ProcessName} - {rule}");
@@ -140,7 +129,7 @@ namespace PopupBlocker.Core.Services
         }
         public void AddRule(string processName, string className, string windowTitle, bool isWindowClass = true) => AddRule(processName, new InterceptorRule(className, windowTitle, isWindowClass));
 
-        public void RemoveRule(InterceptorRules rules, InterceptorRule? rule = null)
+        public void RemoveRule(BlockRules rules, InterceptorRule? rule = null)
         {
             if (rule is null)
                 _ruleList.Remove(rules);
@@ -154,7 +143,7 @@ namespace PopupBlocker.Core.Services
             _logger.Info($"拦截规则已成功删除：{(rule is null ? rules : $"{rules.ProcessName} - {rule}")}");
         }
 
-        public static IPopupCount? FindRule(InterceptorRules? rules, string className, string windowTitle)
+        public static IPopupCount? FindRule(BlockRules? rules, string className, string windowTitle)
         {
             if (rules is null || !rules.IsActive)
                 return null;
