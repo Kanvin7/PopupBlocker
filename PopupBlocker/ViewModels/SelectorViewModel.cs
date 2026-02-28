@@ -12,7 +12,7 @@ namespace PopupBlocker.ViewModels
             ConfirmToolVisibility = Visibility.Hidden;
         }
 
-        private nuint _handle;
+        private readonly WindowInfo _windowInfo = new();
 
         private Visibility _confirmToolVisibility;
         public Visibility ConfirmToolVisibility
@@ -43,8 +43,8 @@ namespace PopupBlocker.ViewModels
             if (obj is SelectorWindow selector)
             {
                 ConfirmToolVisibility = Visibility.Visible;
-                _handle = selector.GetWindowHandleFromMouse();
-                ProcessName = WindowInfo.GetWindowThreadProcessName(_handle);
+                _windowInfo.Handle = selector.GetWindowHandleFromMouse();
+                ProcessName = _windowInfo.ProcessName;
             }
         });
 
@@ -61,7 +61,7 @@ namespace PopupBlocker.ViewModels
         {
             if (obj is SelectorWindow selector)
             {
-                RuleConfigService.AddRule(ProcessName, WindowInfo.GetWindowClass(_handle), WindowInfo.GetWindowTitle(_handle));
+                RuleConfigService.AddRule(ProcessName, _windowInfo.WindowClass, _windowInfo.WindowTitle);
                 selector.Close();
             }
         });

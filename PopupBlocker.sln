@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopupBlocker.Utility", "Pop
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopupBlocker.Core", "PopupBlocker.Core\PopupBlocker.Core.csproj", "{753797AD-B813-48C0-B4C5-9FC342F4A15D}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "PopupBlocker.Setup", "PopupBlocker.Setup\PopupBlocker.Setup.vdproj", "{CCDB882E-1EDC-798E-AB1B-643D35130F26}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{505A2C37-14BC-439B-9F30-3F9DC33D65BF}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -39,10 +37,6 @@ Global
 		{753797AD-B813-48C0-B4C5-9FC342F4A15D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{753797AD-B813-48C0-B4C5-9FC342F4A15D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{753797AD-B813-48C0-B4C5-9FC342F4A15D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCDB882E-1EDC-798E-AB1B-643D35130F26}.Debug|Any CPU.ActiveCfg = Debug
-		{CCDB882E-1EDC-798E-AB1B-643D35130F26}.Debug|Any CPU.Build.0 = Debug
-		{CCDB882E-1EDC-798E-AB1B-643D35130F26}.Release|Any CPU.ActiveCfg = Release
-		{CCDB882E-1EDC-798E-AB1B-643D35130F26}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,13 +1,19 @@
 ﻿using PopupBlocker.Utility.Windows;
+using System.Text;
 
 namespace PopupBlocker.Utility.Commons
 {
-    public static class WindowInfo
+    public class WindowInfo
     {
-        [ThreadStatic]
-        private static System.Text.StringBuilder? _classBuilder;
-        [ThreadStatic]
-        private static System.Text.StringBuilder? _titleBuilder;
+        private const int _bufferSize = 256;
+        private readonly StringBuilder _classBuilder = new(_bufferSize);
+        private readonly StringBuilder _titleBuilder = new(_bufferSize);
+
+        public UIntPtr Handle { get; set; }
+        public string ProcessName => GetWindowThreadProcessName(Handle);
+        public string WindowClass => GetWindowClass(Handle, _classBuilder);
+        public string WindowTitle => GetWindowTitle(Handle, _titleBuilder);
+
 
         public static string GetWindowThreadProcessName(UIntPtr handle)
         {
@@ -16,29 +22,22 @@ namespace PopupBlocker.Utility.Commons
             return process.ProcessName;
         }
 
-        public static string GetWindowClass(UIntPtr handle)
+        public static string GetWindowClass(UIntPtr handle, StringBuilder? buffer = null)
         {
-            _classBuilder ??= new System.Text.StringBuilder(256);
-            _ = WinAPI.GetClassName(handle, _classBuilder, _classBuilder.Capacity);
-            var className = _classBuilder.ToString();
+            buffer ??= new StringBuilder(_bufferSize);
+            _ = WinAPI.GetClassName(handle, buffer, buffer.Capacity);
+            var className = buffer.ToString();
             if (className.StartsWith("HwndWrapper"))
                 return className[12..className.IndexOf(';', 12)];
             else
                 return className;
         }
 
-        public static string GetWindowTitle(UIntPtr handle)
+        public static string GetWindowTitle(UIntPtr handle, StringBuilder? buffer = null)
         {
-            _titleBuilder ??= new System.Text.StringBuilder(256);
-            _ = WinAPI.GetWindowText(handle, _titleBuilder, _titleBuilder.Capacity);
-            return _titleBuilder.ToString();
-        }
-
-        public static bool IsMainWindowHandle(UIntPtr handle)
-        {
-            _ = WinAPI.GetWindowThreadProcessId(handle, out var processId);
-            using var process = System.Diagnostics.Process.GetProcessById((int)processId);
-            return (UIntPtr)process.MainWindowHandle == handle;
+            buffer ??= new StringBuilder(_bufferSize);
+            _ = WinAPI.GetWindowText(handle, buffer, buffer.Capacity);
+            return buffer.ToString();
         }
     }
 }
