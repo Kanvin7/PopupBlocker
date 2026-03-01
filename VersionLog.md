@@ -6,6 +6,10 @@
 
 不想看？可以在[Releases](https://github.com/memory-yiyi/PopupBlocker/releases)直接翻看各版本的简约日志。暂时没网？试试`git show tag`
 
+## v1.0.1
+
+重构v1.0.0的坏代码，排除软件拓展隐患，并优化拦截逻辑
+
 ## v1.0.0
 
 整体升级了软件，使其像大多数弹窗拦截软件一样方便
