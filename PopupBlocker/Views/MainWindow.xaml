@@ -53,7 +53,7 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-        <ui:TitleBar Grid.Row="0"
+        <ui:TitleBar Grid.Row="0" x:Name="tbMain"
             Title="轻量级弹窗拦截器">
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Margin="0,-4,-2,0" Source="pack://application:,,,/Assets/PopupBlocker.ico"/>

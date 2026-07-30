@@ -12,7 +12,8 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Title="InterceptorRulePage">
+      Title="InterceptorRulePage"
+      Loaded="Page_Loaded" Unloaded="Page_Unloaded">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -21,7 +22,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <controls:CardToggleSwitch Grid.Row="0" x:Name="cts_Header"
+        <controls:CardToggleSwitch Grid.Row="0" x:Name="ctsHeader"
             IsChecked="{Binding IsEnableBlock}" d:DataContext="{d:DesignInstance vm:SettingViewModel}">
             <controls:CardToggleSwitch.Icon>
                 <ui:SymbolIcon Symbol="ShieldCheckmark16"/>
@@ -30,13 +31,17 @@
                 DataContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Page}}" d:DataContext="{d:DesignInstance vm:PopupBlockViewModel}"/>
         </controls:CardToggleSwitch>
 
-        <controls:InterceptorRulesCard Grid.Row="1"
-            ItemsSource="{Binding RuleList}"
-            SaveRuleCommand="{Binding SaveRuleCommand}"
-            ResetCountCommand="{Binding ResetCountCommand}"
-            RemoveRuleCommand="{Binding RemoveRuleCommand}"/>
+        <ScrollViewer Grid.Row="1" x:Name="svMiddle"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled">
+            <controls:InterceptorRulesCard
+                ItemsSource="{Binding RuleList}"
+                SaveRuleCommand="{Binding SaveRuleCommand}"
+                ResetCountCommand="{Binding ResetCountCommand}"
+                RemoveRuleCommand="{Binding RemoveRuleCommand}"/>
+        </ScrollViewer>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" x:Name="gFooter">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -46,8 +51,7 @@
                 <ui:HyperlinkButton Content="重置计数" Command="{Binding ResetAllCountCommand}"/>
                 <ui:HyperlinkButton Content="导入规则" Command="{Binding ImportRulesCommand}"/>
                 <ui:HyperlinkButton Content="导出规则" Command="{Binding ExportRulesCommand}"/>
-                <ui:HyperlinkButton Content="窗口拦截" Command="{Binding WindowSelectCommand}">
-                </ui:HyperlinkButton>
+                <ui:HyperlinkButton Content="窗口拦截" Command="{Binding WindowSelectCommand}"/>
             </WrapPanel>
         </Grid>
     </Grid>

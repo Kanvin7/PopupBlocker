@@ -51,7 +51,7 @@ namespace PopupBlocker.Views
 
         private void niMenu_Home_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Home");
         private void niMenu_Setting_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Setting");
-        private void niMenu_Close_Click(object sender, RoutedEventArgs e) => this.Close();
+        private void niMenu_Close_Click(object sender, RoutedEventArgs e) { niMenu.IsOpen = false; this.Close(); }
         #endregion
     }
 }

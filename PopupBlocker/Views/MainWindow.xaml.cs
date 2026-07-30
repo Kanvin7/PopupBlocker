@@ -11,7 +11,8 @@
             InitializeComponent();
         }
 
-        public bool IsClosed { get; set; }
+        public bool IsClosed { get; private set; }
+        public double MainWindowTitleHeight => tbMain.ActualHeight;
         public void ChangePage(string pageIdOrTargetTag) => nvMain.Navigate(pageIdOrTargetTag);
 
         #region 窗口事件
