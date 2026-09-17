@@ -9,9 +9,10 @@
         Title="PopupBlockerTray" Top="0" Left="0" Height="0" Width="0"
         ResizeMode="NoResize" WindowStyle="None" ShowInTaskbar="False" Visibility="Hidden">
     <tray:NotifyIcon
+        x:Name="niTray"
         TooltipText="轻量级弹窗拦截器"
         Icon="pack://application:,,,/Assets/PopupBlocker.ico"
-        FocusOnLeftClick="True"
+        FocusOnLeftClick="False"
         MenuOnRightClick="True">
         <tray:NotifyIcon.Menu>
             <ContextMenu>

@@ -12,7 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <COMReference Include="TaskScheduler">
+    <!-- .NET Core 版 MSBuild 无法解析 COMReference(MSB4803),
+         故命令行编译时用 -p:SkipComReference=true 改用已生成好的互操作程序集。
+         在 Visual Studio 中不传该开关,行为与原来完全一致。 -->
+    <COMReference Include="TaskScheduler" Condition="'$(SkipComReference)' != 'true'">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
       <VersionMajor>1</VersionMajor>
@@ -21,6 +24,10 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>false</EmbedInteropTypes>
     </COMReference>
+    <Reference Include="Interop.TaskScheduler" Condition="'$(SkipComReference)' == 'true'">
+      <HintPath>lib\Interop.TaskScheduler.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

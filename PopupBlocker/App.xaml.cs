@@ -48,9 +48,50 @@ namespace PopupBlocker
             // 正常启动逻辑
             base.OnStartup(e);
 
+            /* 同一时间只保留一个实例。
+             * 关闭窗口并不会结束程序（它会留在托盘里继续拦截），
+             * 如果此时从快捷方式再次启动，就会变成两个实例各写一份设置，
+             * 互相覆盖，表现为"设置被改回去了"。 */
+            _singleInstanceMutex = new Mutex(true, Core.AppPath.SingleInstanceMutexName, out var isFirstInstance);
+            if (!isFirstInstance)
+            {
+                // 自动启动时安静退出即可；手动启动则把已有窗口叫到前台
+                if (!IsAutoRunLaunch(e))
+                    ActivateExistingInstance();
+
+                Current.Shutdown();
+                return;
+            }
+
 #if true    // 上面的空间用于临时测试，有需要记得改为false
             new Views.Tray(e.Args.Length == 0 || e.Args[0] != Core.AppPath.AutoRunSwitchProperty).Show();
 #endif
+        }
+
+        private Mutex? _singleInstanceMutex;
+
+        private static bool IsAutoRunLaunch(StartupEventArgs e) =>
+            e.Args.Length > 0 && e.Args[0] == Core.AppPath.AutoRunSwitchProperty;
+
+        /// <summary>
+        /// 通知已经在运行的那个实例把主窗口显示出来。
+        /// </summary>
+        private static void ActivateExistingInstance()
+        {
+            try
+            {
+                using var signal = EventWaitHandle.OpenExisting(Core.AppPath.ActivateSignalName);
+                signal.Set();
+            }
+            catch
+            {
+                // 对方可能刚好在退出，这时给用户一个交代，避免看起来"点了没反应"
+                MessageBox.Show(
+                    "程序已经在运行了，可以在系统托盘里找到它。",
+                    "轻量级弹窗拦截器",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
         }
 
         private static bool IsRunningAsAdministrator()

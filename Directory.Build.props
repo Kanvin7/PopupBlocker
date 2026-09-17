@@ -1,8 +1,9 @@
 <Project>
   <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
   <PropertyGroup>
-	  <Version>1.0.1</Version>
-	  <AssemblyVersion>1.0.0</AssemblyVersion>
+	  <Version>1.1.0</Version>
+	  <AssemblyVersion>1.1.0.0</AssemblyVersion>
+	  <FileVersion>1.1.0.0</FileVersion>
 	  <Authors>yiyiofficial.top</Authors>
 	  <Company>yiyiofficial.top</Company>
 	  <Product>PopupBlocker</Product>

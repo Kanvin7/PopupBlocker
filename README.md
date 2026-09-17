@@ -1,5 +1,12 @@
 # PopupBlocker
 
+> **关于本仓库**
+> 这里是 [memory-yiyi/PopupBlocker](https://github.com/memory-yiyi/PopupBlocker)（作者 yiyiOfficial）的衍生版本，
+> 在原版基础上做了界面过渡动效、深浅色主题、单实例运行、设置持久化与托盘图标等改进，
+> 每一处改动都记录在 [CHANGES.md](CHANGES.md)。
+> 原版版权归原作者所有，本仓库同样以 GPL-3.0 发布。
+> 本分支当前版本为 1.1.0。
+
 一个轻量级的弹窗拦截软件
 
 ## 使用教程

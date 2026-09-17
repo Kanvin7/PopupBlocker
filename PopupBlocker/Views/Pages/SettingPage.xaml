@@ -18,5 +18,6 @@
         <controls:CardToggleSwitch Content="开机自启" IsChecked="{Binding IsAutoRun}"/>
         <controls:CardToggleSwitch Content="启动拦截" IsChecked="{Binding IsEnableBlock}"/>
         <controls:CardToggleSwitch Content="启动日志" IsChecked="{Binding IsEnableLog}"/>
+        <controls:CardToggleSwitch Content="深色主题" IsChecked="{Binding IsDarkTheme}"/>
     </StackPanel>
 </Page>
