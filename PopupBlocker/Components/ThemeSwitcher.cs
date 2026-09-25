@@ -5,7 +5,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Wpf.Ui.Appearance;
 
-namespace PopupBlocker.Commons
+namespace PopupBlocker.Components
 {
     /// <summary>
     /// 应用主题的切换入口。
@@ -37,7 +37,7 @@ namespace PopupBlocker.Commons
              * 万一画不出来，也只是少了过渡，主题该换还是要换。 */
             var window = FindTargetWindow();
             var host = window?.Content as Panel;
-            var snapshot = host is null || !animate ? null : TryCreateSnapshotSafely(host);
+            var snapshot = host is null || !animate ? null : TryCreateSnapshot(host);
 
             ApplicationThemeManager.Apply(theme);
             UpdateWindowBackground(window, theme);
@@ -110,18 +110,6 @@ namespace PopupBlocker.Commons
             catch
             {
                 // 背景效果只关乎观感，失败不影响主题本身已经切换
-            }
-        }
-
-        private static Image? TryCreateSnapshotSafely(Panel host)
-        {
-            try
-            {
-                return TryCreateSnapshot(host);
-            }
-            catch
-            {
-                return null;
             }
         }
 

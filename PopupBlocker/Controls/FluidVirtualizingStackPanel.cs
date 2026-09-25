@@ -10,7 +10,7 @@ namespace PopupBlocker.Controls
     /// 子元素位置变化时会自动补间过渡的排列面板。
     /// 列表增删引起的重排会表现为平滑滑动，而不是瞬间跳位。
     /// </summary>
-    public class FluidStackPanel : StackPanel
+    public class FluidVirtualizingStackPanel : VirtualizingStackPanel
     {
         #region 属性
         /// <summary>
@@ -20,7 +20,7 @@ namespace PopupBlocker.Controls
             DependencyProperty.Register(
                 nameof(Duration),
                 typeof(int),
-                typeof(FluidStackPanel),
+                typeof(FluidVirtualizingStackPanel),
                 new FrameworkPropertyMetadata(260));
 
         public int Duration

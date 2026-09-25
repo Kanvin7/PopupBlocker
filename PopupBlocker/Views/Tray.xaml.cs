@@ -19,39 +19,40 @@ namespace PopupBlocker.Views
             if (isShowMainWindow)
             {
                 _mainWindow = new();
-                /* 不要动 Application.MainWindow。
-                 * 界面库注册托盘图标时，会把它挂到 Application.MainWindow 名下，
-                 * 而窗口关闭会连带销毁挂在自己名下的窗口，图标也会被系统一起收走。
-                 * 保持 MainWindow 是这个常驻的托盘宿主窗口，关掉主窗口后图标才留得住。 */
                 _mainWindow.Show();
             }
             // 如果是图标异常，请务必按照项目文件(PopupBlocker.csproj)中的注释进行操作
             InitializeComponent();
-            // 界面库默认的"左键点击聚焦主窗口"走的是 Application.MainWindow，
-            // 这里改为由我们自己处理，避免与上面那条约束打架
-            // 该事件的委托在库里的可空性标注自相矛盾，这里局部忽略，与运行行为无关
-#pragma warning disable CS8622
-            niTray.LeftClick += (_, _) => ShowMainWindow("Home");
-#pragma warning restore CS8622
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            if (_mainWindow is not null && !_mainWindow.IsClosed)
+                _mainWindow.Close();
+            _activateSignal?.Dispose();
+            _activateSignal = null;
+            // 谁创建谁释放！
+            Singleton<ServiceManager>.Instance.Dispose();
+            base.OnClosed(e);
+        }
+
+        #region 资源管理器重启后重新注册托盘图标
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
             // 窗口句柄这时才存在，挂钩要放在这里做
             HookTaskbarCreated();
         }
- 
-        #region 资源管理器重启后重新注册托盘图标
+
         /* 资源管理器一旦重启（系统更新、崩溃恢复都会遇到），
          * 系统会广播 TaskbarCreated 要求各程序重新把图标交上去。
          * 界面库不处理这件事，不补这一步，图标就会永久消失。 */
         [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         private static extern uint RegisterWindowMessage(string message);
- 
+
         private System.Windows.Interop.HwndSource? _trayMessageSource;
         private uint _taskbarCreatedMessage;
- 
+
         private void HookTaskbarCreated()
         {
             _taskbarCreatedMessage = RegisterWindowMessage("TaskbarCreated");
@@ -71,17 +72,6 @@ namespace PopupBlocker.Views
             return IntPtr.Zero;
         }
         #endregion
-
-        protected override void OnClosed(EventArgs e)
-        {
-            if (!_mainWindow!.IsClosed)
-                _mainWindow.Close();
-            _activateSignal?.Dispose();
-            _activateSignal = null;
-            // 谁创建谁释放！
-            Singleton<ServiceManager>.Instance.Dispose();
-            base.OnClosed(e);
-        }
 
         #region 单实例：重复启动时把已有窗口叫到前台
         private EventWaitHandle? _activateSignal;
@@ -125,8 +115,10 @@ namespace PopupBlocker.Views
                     _mainWindow.WindowState = WindowState.Normal;
             }
             _mainWindow.Show();
+            _mainWindow.Activate();
         }
 
+        private void niTray_LeftClick(Wpf.Ui.Tray.Controls.NotifyIcon sender, RoutedEventArgs e) => ShowMainWindow("Home");
         private void niMenu_Home_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Home");
         private void niMenu_Setting_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Setting");
         private void niMenu_Close_Click(object sender, RoutedEventArgs e) => this.Close();

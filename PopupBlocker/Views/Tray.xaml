@@ -13,6 +13,7 @@
         TooltipText="轻量级弹窗拦截器"
         Icon="pack://application:,,,/Assets/PopupBlocker.ico"
         FocusOnLeftClick="False"
+        LeftClick="niTray_LeftClick"
         MenuOnRightClick="True">
         <tray:NotifyIcon.Menu>
             <ContextMenu>

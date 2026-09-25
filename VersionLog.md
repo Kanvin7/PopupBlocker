@@ -6,6 +6,26 @@
 
 不想看？可以在[Releases](https://github.com/memory-yiyi/PopupBlocker/releases)直接翻看各版本的简约日志。暂时没网？试试`git show tag`
 
+## v1.1.0
+
+### 来自 [Kanvin7](https://github.com/Kanvin7) 的优化
+
+改进界面动效、主题切换、单实例与托盘图标
+
+- 界面：页面切换与窗口淡入、卡片淡入上移、图标按钮与 Class/Title 按钮的平滑过渡
+
+- 列表：删除时先淡出再移除，其余卡片补间重排；界面列表记录展开状态
+
+- 主题：新增深色主题开关并持久化，切换时以界面快照交叉淡出
+
+- 稳定性：单实例运行、设置读写容错、配置文件共享访问
+
+- 托盘：修复关闭主窗口后图标消失的问题，补上资源管理器重启后的自动重注册
+
+- 构建：直接使用 tlbimp 生成的 COM 互操作程序集，命令行 MSBuild 也能编译
+
+改动逐条记录见 [CHANGES-Kanvin7-v1.1.0.md](https://github.com/memory-yiyi/PopupBlocker/blob/master/ContributorChanges/CHANGES-Kanvin7-v1.1.0.md)。
+
 ## v1.0.1
 
 重构v1.0.0的坏代码，排除软件拓展隐患，并优化拦截逻辑

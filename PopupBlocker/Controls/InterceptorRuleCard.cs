@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using PopupBlocker.Components;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -35,21 +36,19 @@ namespace PopupBlocker.Controls
         /// 界面实际绑定的删除命令。行为与 <see cref="RemoveRuleCommand"/> 一致，
         /// 只是会先让对应卡片淡出，再执行删除。
         /// </summary>
-        public ICommand AnimatedRemoveCommand => _animatedRemoveCommand;
+        public AnimatedRemoveCommand AnimatedRemoveCommand { get; }
 
-        private readonly AnimatedRemoveCommand _animatedRemoveCommand;
+        private static void OnRemoveRuleCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+            ((InterceptorRuleCard)d).AnimatedRemoveCommand?.RaiseCanExecuteChanged();
 
         public InterceptorRuleCard()
         {
             // 展开后的子规则删除：要淡出的是被点到的那一条
-            _animatedRemoveCommand = new AnimatedRemoveCommand(
+            AnimatedRemoveCommand = new AnimatedRemoveCommand(
                 this,
                 static parameter => (parameter as RemoveRuleParameters)?.Item2 ?? parameter,
                 () => RemoveRuleCommand);
         }
-
-        private static void OnRemoveRuleCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-            ((InterceptorRuleCard)d)._animatedRemoveCommand?.RaiseCanExecuteChanged();
 
         static InterceptorRuleCard()
         {

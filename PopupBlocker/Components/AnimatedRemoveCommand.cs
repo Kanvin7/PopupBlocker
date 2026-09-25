@@ -4,13 +4,13 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace PopupBlocker.Controls
+namespace PopupBlocker.Components
 {
     /// <summary>
     /// 给删除命令包一层：先让目标卡片淡出，再真正执行删除。
-    /// 配合 <see cref="FluidStackPanel"/>，就不会出现卡片凭空消失、其余卡片瞬移的生硬感。
+    /// 配合 <see cref="FluidVirtualizingStackPanel"/>，就不会出现卡片凭空消失、其余卡片瞬移的生硬感。
     /// </summary>
-    internal sealed class AnimatedRemoveCommand(
+    public class AnimatedRemoveCommand(
         ItemsControl owner,
         Func<object?, object?> itemSelector,
         Func<ICommand?> innerCommandAccessor) : ICommand
@@ -18,9 +18,13 @@ namespace PopupBlocker.Controls
         private const int FadeOutMilliseconds = 180;
         private bool _isRunning;
 
-        public event EventHandler? CanExecuteChanged;
-
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+        private FrameworkElement? FindContainer(object? item) =>
+            item is null ? null : owner.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+
+        #region ICommand
+        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object? parameter) => innerCommandAccessor()?.CanExecute(parameter) ?? false;
 
@@ -50,6 +54,7 @@ namespace PopupBlocker.Controls
 
                 isCommitted = true;
                 fallback.Stop();
+                container.BeginAnimation(UIElement.OpacityProperty, null);
                 _isRunning = false;
                 innerCommand.Execute(parameter);
             }
@@ -65,8 +70,6 @@ namespace PopupBlocker.Controls
             fallback.Start();
             container.BeginAnimation(UIElement.OpacityProperty, fadeOut);
         }
-
-        private FrameworkElement? FindContainer(object? item) =>
-            item is null ? null : owner.ItemContainerGenerator.ContainerFromItem(item) as FrameworkElement;
+        #endregion
     }
 }

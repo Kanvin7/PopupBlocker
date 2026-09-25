@@ -75,16 +75,16 @@ namespace PopupBlocker.ViewModels
         [JsonPropertyName("isDarkTheme")]
         public bool IsDarkTheme
         {
-            get => Commons.ThemeSwitcher.IsDark;
+            get => Components.ThemeSwitcher.IsDark;
             set
             {
                 try
                 {
-                    Commons.ThemeSwitcher.Apply(value);
+                    Components.ThemeSwitcher.Apply(value);
                 }
                 catch (Exception ex)
                 {
-                    LoggerService.Error($"切换主题失败：{ex.Message}");
+                    LoggerService.Warning($"切换主题失败：{ex.Message}");
                 }
                 NotifyPropertyChanged();
             }

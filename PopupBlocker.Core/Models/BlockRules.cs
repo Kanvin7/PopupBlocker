@@ -1,11 +1,20 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace PopupBlocker.Core.Models
 {
     public sealed class BlockRules : IPopupInfo
     {
         #region 属性
+        private bool _isExpanded;
+        /// <summary>
+        /// ui属性：是否展开卡片
+        /// </summary>
+        [JsonIgnore]
+        public bool IsExpanded
+        {
+            get => !IsProcessName && _isExpanded;
+            set => _isExpanded = !IsProcessName && value;
+        }
         /// <summary>
         /// 规则类型是否为进程名称
         /// </summary>
@@ -19,21 +28,18 @@ namespace PopupBlocker.Core.Models
         /// <summary>
         /// 拦截规则
         /// </summary>
-        /// <remarks>
-        /// 用可观察集合，往已存在的进程里追加或删除规则时，
-        /// 界面上的子规则卡片才能就地增删，而不是整块重建。
-        /// </remarks>
         [JsonPropertyName("rules")]
-        public ObservableCollection<InterceptorRule>? Rules { get; init; }
+        public List<InterceptorRule>? Rules { get; init; }
         #endregion
 
         #region 构造函数
         [JsonConstructor]
-        public BlockRules(string processName, ObservableCollection<InterceptorRule>? rules, bool isActive = true)
+        public BlockRules(string processName, List<InterceptorRule>? rules, bool isActive = true, bool isExpanded = false)
         {
             ProcessName = processName;
             Rules = rules;
             IsActive = isActive;
+            IsExpanded = isExpanded;
         }
         public BlockRules(string processName, bool isActive = true) : this(processName, null, isActive) { }
         #endregion
@@ -48,9 +54,9 @@ namespace PopupBlocker.Core.Models
         {
             if (IsProcessName)
                 throw new InvalidOperationException("按进程名称拦截时，不能添加规则");
-            if (Rules!.Any(r => r.WindowClass == rule.WindowClass && r.WindowTitle == rule.WindowTitle))
+            if (Rules!.Exists(r => r.WindowClass == rule.WindowClass && r.WindowTitle == rule.WindowTitle))
                 return false;
-            Rules!.Add(rule);
+            Rules.Add(rule);
             return true;
         }
         /// <summary>
@@ -75,7 +81,7 @@ namespace PopupBlocker.Core.Models
             if (IsProcessName)
                 throw new InvalidOperationException("按进程名称拦截时，不能匹配规则");
 
-            var rule = Rules!.FirstOrDefault(r => r.Pattern == (r.IsWindowClass ? className : windowTitle));
+            var rule = Rules!.Find(r => r.Pattern == (r.IsWindowClass ? className : windowTitle));
             if (rule is null || !rule.IsActive)
                 return null;
             return rule;
@@ -123,8 +129,7 @@ namespace PopupBlocker.Core.Models
             if (IsProcessName)
                 _blockedCount = 0;
             else
-                foreach (var rule in Rules!)
-                    rule.ResetBlockCount();
+                Rules!.ForEach(r => r.ResetBlockCount());
         }
         /// <summary>
         /// 增加拦截次数

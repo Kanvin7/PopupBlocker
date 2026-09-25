@@ -347,16 +347,14 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <controls:FluidStackPanel Duration="260"/>
+                    <controls:FluidVirtualizingStackPanel Duration="260"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <VirtualizingStackPanel>
-                        <ItemsPresenter/>
-                    </VirtualizingStackPanel>
+                    <ItemsPresenter/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -431,23 +429,23 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <controls:FluidStackPanel Duration="260"/>
+                    <controls:FluidVirtualizingStackPanel Duration="260"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <VirtualizingStackPanel>
+                    <ScrollViewer CanContentScroll="True">
                         <ItemsPresenter/>
-                    </VirtualizingStackPanel>
+                    </ScrollViewer>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <ui:CardExpander>
+                    <ui:CardExpander IsExpanded="{Binding IsExpanded}">
                         <ui:CardExpander.RenderTransform>
                             <TranslateTransform Y="0"/>
                         </ui:CardExpander.RenderTransform>
