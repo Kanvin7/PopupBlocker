@@ -17,13 +17,14 @@ namespace PopupBlocker.Utility.Commons
             if (!File.Exists(path))
                 throw new FileNotFoundException($"文件不存在: {path}");
 
-            using var stream = File.OpenRead(path);
+            // 允许别人同时读，避免因为临时占用就把整份配置读失败
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             return JsonSerializer.Deserialize<T>(stream, jsonSerializerOptions ?? DefaultJsonSerializerOptions) ?? throw new NullReferenceException($"文件内容无效: {path}");
         }
 
         public static void WriteJsonToFile<T>(string path, T data, JsonSerializerOptions? jsonSerializerOptions = null)
         {
-            using var stream = File.OpenWrite(path);
+            using var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
             stream.SetLength(0);
             JsonSerializer.Serialize(stream, data, jsonSerializerOptions ?? DefaultJsonSerializerOptions);
         }

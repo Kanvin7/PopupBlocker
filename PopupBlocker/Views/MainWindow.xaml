@@ -10,6 +10,21 @@
         Loaded="FluentWindow_Loaded" Closing="FluentWindow_Closing"
         WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.Triggers>
+            <!--  窗口出现时整体淡入  -->
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                            From="0" To="1" Duration="0:0:0.28">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -20,7 +35,9 @@
             IsBackButtonVisible="Collapsed"
             IsPaneToggleVisible="False"
             IsTopSeparatorVisible="False"
-            OpenPaneLength="200">
+            OpenPaneLength="200"
+            Transition="FadeInWithSlide"
+            TransitionDuration="250">
             
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="拦截规则" TargetPageTag="Home"

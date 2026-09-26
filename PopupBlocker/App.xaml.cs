@@ -17,7 +17,13 @@ namespace PopupBlocker
              */
 #if !DEBUG
             // 检查是否以管理员身份运行
-            if (!IsRunningAsAdministrator())
+            bool isRunningAsAdministrator;
+            {
+                using var identity = WindowsIdentity.GetCurrent();
+                var principal = new WindowsPrincipal(identity);
+                isRunningAsAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            if (!isRunningAsAdministrator)
             {
                 // 直接通过UAC请求管理员权限
                 var processInfo = new ProcessStartInfo
@@ -45,19 +51,50 @@ namespace PopupBlocker
                 return;
             }
 #endif
+
+            bool isNotAutoRunLaunch() => e.Args.Length == 0 || e.Args.Any(arg => arg == Core.AppPath.AutoRunSwitchProperty);
+
+#if true
+            /* 同一时间只保留一个实例。
+             * 关闭窗口并不会结束程序（它会留在托盘里继续拦截），
+             * 如果此时从快捷方式再次启动，就会变成两个实例各写一份设置，
+             * 互相覆盖，表现为"设置被改回去了"。 */
+            _singleInstanceMutex = new Mutex(true, Core.AppPath.SingleInstanceMutexName, out var isFirstInstance);
+            if (!isFirstInstance)
+            {
+                // 自动启动时安静退出即可；手动启动则把已有窗口叫到前台
+                if (isNotAutoRunLaunch())
+                {
+                    // 通知已经在运行的那个实例把主窗口显示出来。
+                    try
+                    {
+                        using var signal = EventWaitHandle.OpenExisting(Core.AppPath.ActivateSignalName);
+                        signal.Set();
+                    }
+                    catch
+                    {
+                        // 对方可能刚好在退出，这时给用户一个交代，避免看起来"点了没反应"
+                        MessageBox.Show(
+                            "程序已经在运行了，可以在系统托盘里找到它。",
+                            "轻量级弹窗拦截器",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+                    }
+                }
+
+                Current.Shutdown();
+                return;
+            }
+#endif
+
             // 正常启动逻辑
             base.OnStartup(e);
 
 #if true    // 上面的空间用于临时测试，有需要记得改为false
-            new Views.Tray(e.Args.Length == 0 || e.Args[0] != Core.AppPath.AutoRunSwitchProperty).Show();
+            new Views.Tray(isNotAutoRunLaunch()).Show();
 #endif
         }
 
-        private static bool IsRunningAsAdministrator()
-        {
-            using var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
+        private static Mutex? _singleInstanceMutex;
     }
 }

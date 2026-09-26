@@ -5,6 +5,16 @@ namespace PopupBlocker.Core.Models
     public sealed class BlockRules : IPopupInfo
     {
         #region 属性
+        private bool _isExpanded;
+        /// <summary>
+        /// ui属性：是否展开卡片
+        /// </summary>
+        [JsonIgnore]
+        public bool IsExpanded
+        {
+            get => !IsProcessName && _isExpanded;
+            set => _isExpanded = !IsProcessName && value;
+        }
         /// <summary>
         /// 规则类型是否为进程名称
         /// </summary>
@@ -24,11 +34,12 @@ namespace PopupBlocker.Core.Models
 
         #region 构造函数
         [JsonConstructor]
-        public BlockRules(string processName, List<InterceptorRule>? rules, bool isActive = true)
+        public BlockRules(string processName, List<InterceptorRule>? rules, bool isActive = true, bool isExpanded = false)
         {
             ProcessName = processName;
             Rules = rules;
             IsActive = isActive;
+            IsExpanded = isExpanded;
         }
         public BlockRules(string processName, bool isActive = true) : this(processName, null, isActive) { }
         #endregion

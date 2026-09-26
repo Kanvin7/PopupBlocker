@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using PopupBlocker.Core.Models;
 using PopupBlocker.Utility.Commons;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace PopupBlocker.ViewModels
@@ -15,7 +16,14 @@ namespace PopupBlocker.ViewModels
 
         #region 属性
         public long BlockedCount => RuleConfigService.BlockedCount;
-        public IEnumerable<BlockRules> RuleList { get; private set; }
+
+        /// <summary>
+        /// 界面绑定的规则列表。
+        /// 这里用可观察集合，而不是每次整份替换，
+        /// 否则规则一变所有卡片都会被重建：入场动画重播一遍，
+        /// 已展开的进程分组也会被收拢，重排动画更无从谈起。
+        /// </summary>
+        public ObservableCollection<BlockRules> RuleList { get; } = [];
 
         public ICommand ResetAllCountCommand => new RelayCommand(obj =>
         {
@@ -75,8 +83,9 @@ namespace PopupBlocker.ViewModels
         #region 方法
         private void RuleChangedEvent(IEnumerable<BlockRules> ruleList)
         {
-            RuleList = ruleList;
-            NotifyPropertyChanged(nameof(RuleList));
+            RuleList.Clear();
+            foreach (var rules in ruleList)
+                RuleList.Add(rules);
             NotifyPropertyChanged(nameof(BlockedCount));
         }
         #endregion

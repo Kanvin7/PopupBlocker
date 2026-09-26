@@ -23,6 +23,17 @@ namespace PopupBlocker.Core
 
         public const string AppName = "PopupBlocker";
         public const string AutoRunSwitchProperty = "/autorun";
+
+        /// <summary>
+        /// 单实例互斥体名称，保证同一时间只有一个程序在运行。
+        /// </summary>
+        public const string SingleInstanceMutexName = "PopupBlocker.SingleInstance";
+
+        /// <summary>
+        /// 唤醒已有实例的信号名称。
+        /// </summary>
+        public const string ActivateSignalName = "PopupBlocker.Activate";
+
         public static string ExecutingPath { get; }
     }
 }
