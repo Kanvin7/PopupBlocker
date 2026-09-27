@@ -27,10 +27,12 @@ namespace PopupBlocker.Views
 
         protected override void OnClosed(EventArgs e)
         {
-            if (_mainWindow is not null && !_mainWindow.IsClosed)
-                _mainWindow.Close();
+            if (!_mainWindow?.IsClosed ?? false)
+                _mainWindow!.Close();
             _activateSignal?.Dispose();
             _activateSignal = null;
+            _trayMessageSource?.Dispose();
+            _trayMessageSource = null;
             // 谁创建谁释放！
             Singleton<ServiceManager>.Instance.Dispose();
             base.OnClosed(e);
@@ -121,7 +123,7 @@ namespace PopupBlocker.Views
         private void niTray_LeftClick(Wpf.Ui.Tray.Controls.NotifyIcon sender, RoutedEventArgs e) => ShowMainWindow("Home");
         private void niMenu_Home_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Home");
         private void niMenu_Setting_Click(object sender, RoutedEventArgs e) => ShowMainWindow("Setting");
-        private void niMenu_Close_Click(object sender, RoutedEventArgs e) { niMenu.IsOpen = false; this.Close(); }
+        private void niMenu_Close_Click(object sender, RoutedEventArgs e) => this.Close();
         #endregion
     }
 }

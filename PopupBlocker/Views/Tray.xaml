@@ -16,7 +16,7 @@
         LeftClick="niTray_LeftClick"
         MenuOnRightClick="True">
         <tray:NotifyIcon.Menu>
-            <ContextMenu x:Name="niMenu">
+            <ContextMenu>
                 <ui:MenuItem Header="主界面" Click="niMenu_Home_Click">
                     <ui:MenuItem.Icon>
                         <ui:SymbolIcon Symbol="Home16"/>

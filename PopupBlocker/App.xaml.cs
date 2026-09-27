@@ -52,7 +52,7 @@ namespace PopupBlocker
             }
 #endif
 
-            bool isNotAutoRunLaunch() => e.Args.Length == 0 || e.Args.Any(arg => arg == Core.AppPath.AutoRunSwitchProperty);
+            bool isNotAutoRunLaunch() => e.Args.Length == 0 || !e.Args.Any(arg => arg == Core.AppPath.AutoRunSwitchProperty);
 
 #if true
             /* 同一时间只保留一个实例。

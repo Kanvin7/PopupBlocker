@@ -31,15 +31,11 @@
                 DataContext="{Binding DataContext,RelativeSource={RelativeSource AncestorType=Page}}" d:DataContext="{d:DesignInstance vm:PopupBlockViewModel}"/>
         </controls:CardToggleSwitch>
 
-        <ScrollViewer Grid.Row="1" x:Name="svMiddle"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled">
-            <controls:InterceptorRulesCard
-                ItemsSource="{Binding RuleList}"
-                SaveRuleCommand="{Binding SaveRuleCommand}"
-                ResetCountCommand="{Binding ResetCountCommand}"
-                RemoveRuleCommand="{Binding RemoveRuleCommand}"/>
-        </ScrollViewer>
+        <controls:InterceptorRulesCard Grid.Row="1" x:Name="svMiddle"
+            ItemsSource="{Binding RuleList}"
+            SaveRuleCommand="{Binding SaveRuleCommand}"
+            ResetCountCommand="{Binding ResetCountCommand}"
+            RemoveRuleCommand="{Binding RemoveRuleCommand}"/>
 
         <Grid Grid.Row="2" x:Name="gFooter">
             <Grid.ColumnDefinitions>

@@ -6,13 +6,7 @@
 ## 为什么放进仓库
 
 .NET SDK 自带的 MSBuild 不支持 `COMReference`（会报 MSB4803），
-所以命令行编译时需要这个已生成好的互操作程序集：
-
-\`\`\`
-dotnet build -p:SkipComReference=true
-\`\`\`
-
-在 Visual Studio 中不要传这个开关，工程仍走 `COMReference` 正常生成。
+所以命令行编译时需要这个已生成好的互操作程序集。
 
 ## 如何重新生成
 
